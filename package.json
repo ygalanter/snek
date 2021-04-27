@@ -1,0 +1,29 @@
+{
+  "devDependencies": {
+    "@fitbit/sdk": "~5.0.0",
+    "@fitbit/sdk-cli": "^1.7.3",
+    "fitbit-sdk-types": "^6.0.3"
+  },
+  "fitbit": {
+    "appUUID": "10381a89-ad59-4db5-b030-984ffdcdda3b",
+    "appType": "app",
+    "appDisplayName": "Snek",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#ffffff",
+    "requestedPermissions": [],
+    "buildTargets": [
+      "atlas",
+      "vulcan"
+    ],
+    "i18n": {
+      "en-US": {
+        "name": "Snek"
+      }
+    },
+    "defaultLanguage": "en-US"
+  },
+  "dependencies": {},
+  "scripts": {
+    "build": "fitbit-build"
+  }
+}

@@ -1,0 +1,15 @@
+.s {
+  width: 15;
+  height: 15;
+  rx: 3;
+  ry: 3;
+  fill: yellow
+}
+
+.h {
+  width: 16;
+  height: 16;
+  rx: 4;
+  ry: 4;
+  fill: red
+}
