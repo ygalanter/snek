@@ -1,11 +1,11 @@
 import document from "document";
 import { me as device } from "device";
-import { Dir } from "fs";
+import { field } from "./field"
+import { unlinkSync, writeFileSync } from "fs";
 
 const SCREEN_SIZE = { x: device.screen.width, y: device.screen.height };
 const SEGMENT_SIZE = 15;
-const INITIAL_SNAKE_LENGTH = 10;
-const INTERVAL = 100;
+const INTERVAL = 30;
 
 type Direction = {
     axis: "x" | "y";
@@ -17,8 +17,27 @@ interface DirectElement extends RectElement {
 }
 
 let snake: DirectElement[];
-let snakeReserve: DirectElement[];
 let turningPoints: { x: number, y: number, direction: Direction }[]
+
+function initControls() {
+    document.getElementsByClassName('tap').forEach(button => {
+        switch (button.id) {
+            case 'up':
+                button.addEventListener('click', () => turnSnake({ axis: 'y', sign: -1 }));
+                break
+            case 'down':
+                button.addEventListener('click', () => turnSnake({ axis: 'y', sign: 1 }));
+                break
+            case 'left':
+                button.addEventListener('click', () => turnSnake({ axis: 'x', sign: -1 }));
+                break
+            case 'right':
+                button.addEventListener('click', () => turnSnake({ axis: 'x', sign: 1 }));
+                break
+        }
+    })
+    
+}
 
 function initNewSegment(
     newSegment: DirectElement,
@@ -36,35 +55,27 @@ function initNewSegment(
 
 function initSnake() {
     snake = [];
-    snakeReserve = [];
     turningPoints = [];
 
-    const freeSegments = document.getElementsByClassName("s") as DirectElement[];
+    const rects = document.getElementsByClassName("s") as DirectElement[];
 
-    // segments[0] is ignored - it's in <defs> section
 
     // snake head
-    const head = freeSegments[1];
-    head.class = "h";
+    const head = rects[0];
+    head.class += " h";
     head.x = SCREEN_SIZE.x / 2;
     head.y = SCREEN_SIZE.y / 2;
     head.direction = { axis: "x", sign: 1 };
     snake.push(head);
 
     // rest of the snake
-    for (let i = 2; i < freeSegments.length; i++) {
-        // snake segments are added to snake
-        if (i < INITIAL_SNAKE_LENGTH + 1) {
-            snake.push(initNewSegment(freeSegments[i], freeSegments[i - 1]))
-            // rest of segments added to reserve
-        } else {
-            snakeReserve.push(freeSegments[i]);
-        }
+    for (let i = 1; i < rects.length; i++) {
+        snake.push(initNewSegment(rects[i], rects[i - 1]))
     }
 }
 
 function moveSegment(segment: DirectElement) {
-    const newCoord = segment[segment.direction.axis] + SEGMENT_SIZE * segment.direction.sign;
+    const newCoord = segment[segment.direction.axis] + SEGMENT_SIZE / 3 * segment.direction.sign;
 
     if (newCoord >= SCREEN_SIZE[segment.direction.axis]) {
         segment[segment.direction.axis] = 0
@@ -110,6 +121,8 @@ function startSnakeMovement() {
         }
 
     }, INTERVAL)
+
+    return interval
 }
 
 function turnSnake(direction: Direction) {
@@ -121,23 +134,52 @@ function turnSnake(direction: Direction) {
     })
 }
 
-function growSnake() {
-    const newSegment = snakeReserve.pop()!;
-    initNewSegment(newSegment, snake[snake.length-1]);
-    snake.push(newSegment); 
-    console.log('GROWING!')
+let viewId: number
+function updateField() {
+    console.log("***** GROWING!")
+    clearInterval(interval);
+
+    const directions: Direction[] = [];
+    let rects = '';
+
+    for (let segment of snake) {
+        directions.push(segment.direction);
+        rects += `<rect x="${segment.x}" y="${segment.y}" class="${segment.class}" />`
+    }
+
+    rects += '<rect class="s" />'
+
+    if (viewId) {
+        unlinkSync(`field${viewId}.view`);
+    }
+
+    viewId = Math.random();
+    const viewName = `field${viewId}.view`;
+    writeFileSync(viewName, field.replace('<snake/>', rects), 'utf-8');
+    document.location.replace(`/private/data/${viewName}`).then(() => {
+
+        snake = [];
+        const rects = document.getElementsByClassName("s") as DirectElement[];
+
+        rects.forEach((segment, index) => {
+            if (index < rects.length - 1) {
+             segment.direction = directions[index];
+            }
+            snake.push(segment);
+        });
+
+        initNewSegment(snake[snake.length - 1], snake[snake.length - 2]);
+
+        initControls();
+        interval = startSnakeMovement();
+    })
 }
 
 
+initControls();
 initSnake();
-startSnakeMovement();
+let interval = startSnakeMovement();
 
-// simulating random snake turns
-setInterval(() => {
-    turnSnake({ axis: snake[0].direction.axis === 'x' ? 'y' : 'x', sign: Math.random() > 0.4 ? 1 : -1 })
-}, 2000)
+setInterval(updateField,6000);
 
-// simulating snake growth.
-setInterval(() => {
-    growSnake();
-}, 5000)
+

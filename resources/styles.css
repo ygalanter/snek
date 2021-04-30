@@ -13,3 +13,10 @@
   ry: 4;
   fill: red
 }
+
+.tap {
+  fill: blue;
+  opacity: 0.2;
+  rx: 25;
+  ry: 25;
+}
