@@ -1,12 +1,3 @@
 {
-	"compilerOptions": {
-		"noEmit": true,
-		"module": "es2015",
-		"moduleResolution": "node",
-		"esModuleInterop": true,
-		"noImplicitAny": true,
-		"noImplicitThis": true,
-		"strictNullChecks": true,
-		"strictFunctionTypes": true
-	}
-}
+	"extends": "./node_modules/@fitbit/sdk/sdk-tsconfig.json"
+  }
