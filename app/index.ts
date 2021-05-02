@@ -31,7 +31,7 @@ function initControls() {
 
     document.getElementsByClassName('tap').forEach(control => {
         control.addEventListener('mousedown', (evt) => {
-            
+
             // Preventing accidental move in the direction opposite current that would cause snake to collide with itself
             if (
                 (prevEvent === 'right' && control.id == 'left') ||
@@ -75,7 +75,7 @@ function initSnake() {
 
     // Creating a string of SVG rectangles to represent snake
     for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
-        rects += `<rect x="${SEGMENT_SIZE * i + SEGMENT_SIZE}" y="${SEGMENT_SIZE * 2}" class="${i < INITIAL_SNAKE_LENGTH - 1? 's' : 's h'}" />`
+        rects += `<rect x="${SEGMENT_SIZE * i + SEGMENT_SIZE}" y="${SEGMENT_SIZE * 2}" class="${i < INITIAL_SNAKE_LENGTH - 1 ? 's' : 's h'}" />`
     }
 
     growSnake(rects);
@@ -109,15 +109,15 @@ function startSnake() {
 
         // if snake went past screen edge - it will emerge from opposite side
         if (nextMoveX != 0) {
-        if (newX >= SCREEN_SIZE.width) newX = 0
-        else if (newX <= 0) newX = SCREEN_SIZE.width
+            if (newX >= SCREEN_SIZE.width) newX = 0
+            else if (newX <= 0) newX = SCREEN_SIZE.width
         }
 
         newHead.x = newX
 
         if (nextMoveY != 0) {
-        if (newY >= SCREEN_SIZE.height) newY = 0
-        else if (newY <= 0) newY = SCREEN_SIZE.height
+            if (newY >= SCREEN_SIZE.height) newY = 0
+            else if (newY <= 0) newY = SCREEN_SIZE.height
         }
 
         newHead.y = newY
@@ -156,7 +156,7 @@ function growSnake(rects?: string) {
         for (let segment of segments) {
             rects += `<rect x="${segment.x}" y="${segment.y}" class="${segment.class}" />`
         }
-    
+
         // if previous SVG file exists - delete it
         if (viewId) {
             unlinkSync(`field${viewId}.view`);
