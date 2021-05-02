@@ -3,8 +3,8 @@ import { me as device } from "device";
 import { field } from "./field"
 import { unlinkSync, writeFileSync } from "fs";
 
-const SCREEN_SIZE = { width: device.screen.width, height: device.screen.height };
 const SEGMENT_SIZE = 15;
+const SCREEN_SIZE = { width: Math.floor(device.screen.width / SEGMENT_SIZE) * SEGMENT_SIZE, height: Math.floor(device.screen.height / SEGMENT_SIZE) * SEGMENT_SIZE };
 const INTERVAL = 150;
 
 let nextMoveX = 1;
@@ -16,7 +16,7 @@ let prevEvent = 'right';
 function initControls() {
 
     document.getElementsByClassName('tap').forEach(control => {
-        control.addEventListener('click', (evt) => {
+        control.addEventListener('mousedown', (evt) => {
 
             if (
                 (prevEvent === 'right' && control.id == 'left') ||
@@ -55,8 +55,8 @@ function initControls() {
 
 function initSnake() {
     document.getElementsByClassName('s').forEach((segment: RectElement, index) => {
-        segment.x = SCREEN_SIZE.width / 2 - SEGMENT_SIZE * 6 + SEGMENT_SIZE * index;
-        segment.y = SCREEN_SIZE.height / 2
+        segment.x = SEGMENT_SIZE * index + SEGMENT_SIZE;
+        segment.y = SEGMENT_SIZE * 2;
 
         segments.push(segment);
     })
@@ -76,24 +76,12 @@ function startSnake() {
         const newX = oldHead.x + SEGMENT_SIZE * nextMoveX;
         const newY = oldHead.y + SEGMENT_SIZE * nextMoveY;
 
-        new Promise(resolve => {
-            segments.forEach((segment: RectElement) => {
-                if (newX === segment.x && newY === segment.y) {
-                    resolve(true)
-                }
-            })
-
-            resolve(false)
-        }).then(isCollided => {
-            if (isCollided) {
-                console.log('**** BOOM ****');
+        segments.forEach((segment: RectElement) => {
+            if (newX === segment.x && newY === segment.y) {
+                console.log('BOOM!');
                 clearInterval(iv);
-                clearInterval(ivs);
             }
         })
-
-
-
 
         if (newX >= SCREEN_SIZE.width) newHead.x = 0
         else if (newX <= 0) newHead.x = SCREEN_SIZE.width
@@ -103,7 +91,12 @@ function startSnake() {
         else if (newY <= 0) newHead.y = SCREEN_SIZE.height
         else newHead.y = newY;
 
-        segments.push(newHead)
+        segments.push(newHead);
+
+        const apple = document.getElementById("apple") as RectElement;
+        if (newHead.x === apple.x && newHead.y === apple.y) {
+            growSnake();
+        }
 
 
     }, INTERVAL)
@@ -138,14 +131,19 @@ function growSnake() {
         });
 
         initControls();
+        setApple();
         iv = startSnake();
 
     })
 }
 
+function setApple() {
+    const apple = document.getElementById("apple") as RectElement;
+    apple.x = Math.floor(Math.random() * (SCREEN_SIZE.width - SEGMENT_SIZE * 2) / SEGMENT_SIZE) * SEGMENT_SIZE + SEGMENT_SIZE * 2;
+    apple.y = Math.floor(Math.random() * (SCREEN_SIZE.height - SEGMENT_SIZE * 2) / SEGMENT_SIZE) * SEGMENT_SIZE + SEGMENT_SIZE * 2;
+}
+
 initControls();
+setApple();
 initSnake();
 let iv = startSnake();
-
-// simulating snake grows;
-const ivs = setInterval(growSnake, 6000);

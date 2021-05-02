@@ -1,5 +1,6 @@
 export const field = `
 <svg>
+<rect class="apple" id="apple" />
 
 <snake/>
 

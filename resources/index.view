@@ -1,5 +1,5 @@
 <svg>
-
+<rect class="apple" id="apple" />
 <rect class="s"/><rect class="s"/><rect class="s"/><rect class="s"/><rect class="s"/><rect class="s"/>
 
 <rect id="left" class="tap" x="0" y="33%" width="33%" height="33%" pointer-events="visible" />  

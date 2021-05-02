@@ -20,3 +20,11 @@
   rx: 25;
   ry: 25;
 }
+
+.apple {
+  width: 15;
+  height: 15;
+  rx: 7;
+  ry: 7;
+  fill: green
+}
