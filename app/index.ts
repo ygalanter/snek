@@ -72,7 +72,6 @@ function initControls() {
 function initSnake() {
 
     let rects = '';
-    let i: number;
 
     // Creating a string of SVG rectangles to represent snake
     for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
@@ -97,8 +96,8 @@ function startSnake() {
         oldHead.class = 's'; // old head is no longer head, so we give it regular segment colors
         newHead.class = 's h'; // new head gets head colors
 
-        const newX = oldHead.x + SEGMENT_SIZE * nextMoveX;
-        const newY = oldHead.y + SEGMENT_SIZE * nextMoveY;
+        let newX = oldHead.x + SEGMENT_SIZE * nextMoveX;
+        let newY = oldHead.y + SEGMENT_SIZE * nextMoveY;
 
         // Verifying if new head coordinates collided with any part of snake body
         segments.forEach((segment: RectElement) => {
@@ -109,13 +108,19 @@ function startSnake() {
         })
 
         // if snake went past screen edge - it will emerge from opposite side
-        if (newX >= SCREEN_SIZE.width) newHead.x = 0
-        else if (newX <= 0) newHead.x = SCREEN_SIZE.width
-        else newHead.x = newX;
+        if (nextMoveX != 0) {
+        if (newX >= SCREEN_SIZE.width) newX = 0
+        else if (newX <= 0) newX = SCREEN_SIZE.width
+        }
 
-        if (newY >= SCREEN_SIZE.height) newHead.y = 0
-        else if (newY <= 0) newHead.y = SCREEN_SIZE.height
-        else newHead.y = newY;
+        newHead.x = newX
+
+        if (nextMoveY != 0) {
+        if (newY >= SCREEN_SIZE.height) newY = 0
+        else if (newY <= 0) newY = SCREEN_SIZE.height
+        }
+
+        newHead.y = newY
 
         segments.push(newHead);
 
