@@ -6,11 +6,18 @@ import { unlinkSync, writeFileSync } from "fs";
 const SEGMENT_SIZE = 15;
 const SCREEN_SIZE = { width: Math.floor(device.screen.width / SEGMENT_SIZE) * SEGMENT_SIZE, height: Math.floor(device.screen.height / SEGMENT_SIZE) * SEGMENT_SIZE };
 const INTERVAL = 150;
+const INITIAL_SNAKE_LENGTH = 5;
 
 let nextMoveX = 1;
 let nextMoveY = 0;
 
 const segments: RectElement[] = [];
+
+function initTitleScreen() {
+    document.getElementById('play').addEventListener('click', () => {
+        initSnake();
+    })
+}
 
 let prevEvent = 'right';
 function initControls() {
@@ -54,14 +61,15 @@ function initControls() {
 }
 
 function initSnake() {
-    document.getElementsByClassName('s').forEach((segment: RectElement, index) => {
-        segment.x = SEGMENT_SIZE * index + SEGMENT_SIZE;
-        segment.y = SEGMENT_SIZE * 2;
 
-        segments.push(segment);
-    })
+    let rects = '';
+    let i: number;
 
-    segments[segments.length - 1].class = 's h';
+    for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
+        rects += `<rect x="${SEGMENT_SIZE * i + SEGMENT_SIZE}" y="${SEGMENT_SIZE * 2}" class="${i < INITIAL_SNAKE_LENGTH - 1? 's' : 's h'}" />`
+    }
+
+    growSnake(rects);
 }
 
 function startSnake() {
@@ -104,18 +112,20 @@ function startSnake() {
 
 
 let viewId: number;
-function growSnake() {
+function growSnake(rects?: string) {
     console.log("***** GROWING!")
     clearInterval(iv);
 
-    let rects = '<rect class="s" />';
+    if (!rects) {
+        rects = '<rect class="s" />';
 
-    for (let segment of segments) {
-        rects += `<rect x="${segment.x}" y="${segment.y}" class="${segment.class}" />`
-    }
-
-    if (viewId) {
-        unlinkSync(`field${viewId}.view`);
+        for (let segment of segments) {
+            rects += `<rect x="${segment.x}" y="${segment.y}" class="${segment.class}" />`
+        }
+    
+        if (viewId) {
+            unlinkSync(`field${viewId}.view`);
+        }
     }
 
     viewId = Math.random();
@@ -143,7 +153,5 @@ function setApple() {
     apple.y = Math.floor(Math.random() * (SCREEN_SIZE.height - SEGMENT_SIZE * 2) / SEGMENT_SIZE) * SEGMENT_SIZE + SEGMENT_SIZE * 2;
 }
 
-initControls();
-setApple();
-initSnake();
-let iv = startSnake();
+let iv;
+initTitleScreen();

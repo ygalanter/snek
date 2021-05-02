@@ -28,3 +28,14 @@
   ry: 7;
   fill: green
 }
+
+.application-fill           { fill: fb-mint; }
+.foreground-fill            { fill: fb-white; }
+.background-fill            { fill: fb-red; }
+
+#play #text {
+  text-buffer: "PLAY";
+}
+#options #text {
+  text-buffer: "OPTIONS";
+}
